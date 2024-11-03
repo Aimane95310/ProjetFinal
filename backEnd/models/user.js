@@ -8,4 +8,7 @@ const userSchema = mongoose.Schema({
 
 userSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model('User', userSchema);
+// Vérifie si le modèle existe déjà pour éviter l'erreur OverwriteModelError
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+module.exports = User;
