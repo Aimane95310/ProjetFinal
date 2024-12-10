@@ -1,7 +1,7 @@
 const Post = require('../models/post');
 const fs = require('fs');
 const globals = require('../globals');
-
+const multer = require('multer');
 exports.getAllPost = async (req, res, next) => {
   try {
     const posts = await Post.find()
@@ -39,8 +39,9 @@ exports.createPost = async (req, res, next) => {
 exports.getOnePost = async (req, res, next) => {
   try {
     // Utilisation de await pour attendre le résultat de findOne
-    const post = await Post.findOne({ _id: req.params.id });
-
+    const post = await Post.findOne({ _id: req.params.id })
+    .populate('userId', 'email') // Populer l'userId pour obtenir l'email;
+    console.log(post);
     if (!post) {
       return res.status(404).json({ error: 'post not found' });
     }
@@ -52,6 +53,7 @@ exports.getOnePost = async (req, res, next) => {
     res.status(404).json({ error });
   }
 };
+
 exports.modifyPost = async (req, res, next) => {
 
   try {
@@ -73,15 +75,15 @@ exports.modifyPost = async (req, res, next) => {
 
       return res.status(404).json({ message: 'Post non trouvé' });
     }
- 
-    
+
+
     // L'utilisateur connecté est l'administrateur ou celui qui a créé le post
-    if (( req.auth.userId != globals.adminId.toString()) && (post.userId != req.auth.userId)) {
+    if ((req.auth.userId != globals.adminId.toString()) && (post.userId != req.auth.userId)) {
       // Vérification de l'autorisation de l'utilisateur
-     
+
       return res.status(401).json({ message: 'Not authorized' });
     }
-   
+
 
 
     // Mise à jour du post
@@ -91,7 +93,7 @@ exports.modifyPost = async (req, res, next) => {
 
   } catch (error) {
     // Gestion globale des erreurs
-    console.log("errror" +error);
+    console.log("errror" + error);
     // Vérification si l'erreur est due à un ID invalide (ce qui résulterait en un post non trouvé)
     if (error.name === 'CastError' && error.kind === 'ObjectId') {
       return res.status(404).json({ message: 'Post non trouvé' });

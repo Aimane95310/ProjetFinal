@@ -102,6 +102,6 @@ describe('modifyComment Controller', () => {
 
     expect(Comment.findOne).toHaveBeenCalledWith({ _id: 'commentId123' });
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Database error' });
+    expect(res.json).toHaveBeenCalledWith({ error: "Database error"});
   });
 });

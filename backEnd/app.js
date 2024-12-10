@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 require('dotenv').config();
-const stuff = require('./routes/stuff');
+ 
 const comment = require('./routes/comment');
 const userRoutes = require('./routes/user');
 const post = require('./routes/post');
@@ -33,9 +33,8 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/api/stuff', stuff);
-app.use('/api/comment', comment);
-app.use('/api/post', post);
+app.use('/api/comments', comment);
+app.use('/api/posts', post);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

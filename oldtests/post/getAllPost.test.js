@@ -17,7 +17,7 @@ describe('getAllPost', () => {
 
   it('should return all posts with status 200', async () => {
     const mockPosts = [{ _id: '1', text: 'Post 1' }, { _id: '2', text: 'Post 2' }];
-    Post.find.mockReturnValue({
+    Post.find = jest.fn().mockReturnValue({
       populate: jest.fn().mockReturnThis(),
       sort: jest.fn().mockResolvedValue(mockPosts), // Simule le retour de la promesse
     });
@@ -31,7 +31,7 @@ describe('getAllPost', () => {
 
   it('should return status 400 if an error occurs', async () => {
     const error = new Error('Database error');
-    Post.find.mockReturnValue({
+    Post.find = jest.fn().mockReturnValue({
       populate: jest.fn().mockReturnThis(),
       sort: jest.fn().mockRejectedValue(error), // Simule une erreur
     });
@@ -39,6 +39,6 @@ describe('getAllPost', () => {
     await getAllPost(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(400); // Vérifie le code de statut
-    expect(res.json).toHaveBeenCalledWith({ error }); // Vérifie que l'erreur est renvoyée
+    expect(res.json).toHaveBeenCalledWith({ error: error.message }); // Vérifie que l'erreur est renvoyée
   });
 });

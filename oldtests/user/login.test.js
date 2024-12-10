@@ -38,7 +38,7 @@ describe('POST /api/auth/login', () => {
         expect(res.body).toHaveProperty('token');
 
         // Vérifier que le jeton est valide
-        const decodedToken = jwt.verify(res.body.token, 'RANDOM_TOKEN_SECRET');
+        const decodedToken = jwt.verify(res.body.token, process.env.JWT_SECRET || 'RANDOM_TOKEN_SECRET');
         expect(decodedToken.userId).toBe(res.body.userId);
     });
 

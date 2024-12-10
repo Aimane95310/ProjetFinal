@@ -63,38 +63,49 @@ exports.login = async (req, res, next) => {
         res.status(500).json({ error: 'Une erreur est survenue lors de la connexion' });
     }
 };
-//  méthode pour créer ou vérifier l'existence d'un compte administrateur
 exports.ensureAdminExists = async () => {
     try {
+        // Récupérer les identifiants administrateur depuis les variables d'environnement
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
+        // Vérification des variables d'environnement nécessaires
         if (!adminEmail || !adminPassword) {
-            console.error('Les identifiants administrateur ne sont pas définis dans les variables d\'environnement');
-            return;
+            console.error(
+                'Les identifiants administrateur ne sont pas définis dans les variables d\'environnement'
+            );
+            return; // Sortie si les variables d'environnement sont absentes
         }
 
-        const existingAdmin = await User.findOne({ email: adminEmail });
+        // Rechercher le compte administrateur dans la base de données
+        let existingAdmin = await User.findOne({ email: adminEmail });
 
+        // Si le compte administrateur n'existe pas
         if (!existingAdmin) {
+            console.log('Aucun compte administrateur trouvé, création en cours...');
 
+            // Hasher le mot de passe administrateur
             const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
+            // Créer une nouvelle instance d'utilisateur avec les informations administrateur
             const adminUser = new User({
                 email: adminEmail,
-                password: hashedPassword
+                password: hashedPassword, // Enregistre le mot de passe haché pour plus de sécurité
             });
 
-        const savedAdminUser=    await adminUser.save();
+            // Sauvegarder le compte administrateur dans la base de données
+            existingAdmin = await adminUser.save();
             console.log('Compte administrateur créé avec succès');
-            console.log('savedAdminUses' +savedAdminUser._id);
         } else {
+            // Si le compte administrateur existe déjà, afficher un message d'information
             console.log('Le compte administrateur existe déjà');
         }
-        // Stockage de l'ID de l'administrateur dans la variable globale
-        globals.adminId = savedAdminUser._id;
 
+        // Stocker l'ID de l'administrateur dans une variable globale
+        globals.adminId = existingAdmin._id;
+        console.log(`ID administrateur stocké : ${globals.adminId}`);
     } catch (error) {
+        // Gestion des erreurs lors de l'exécution
         console.error('Erreur lors de la création/vérification du compte administrateur:', error);
     }
 };

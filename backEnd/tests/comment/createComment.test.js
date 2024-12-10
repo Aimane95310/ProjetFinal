@@ -1,6 +1,6 @@
 // Importation des modules nécessaires
-const { createComment } = require('../../controllers/comment'); // Ajustez le chemin selon votre structure
-const Comment = require('../../models/comment'); // Ajustez le chemin selon votre structure
+const { createComment } = require('../../controllers/comment');  
+const Comment = require('../../models/comment');  
 
 // Mock du modèle Comment pour éviter les interactions réelles avec la base de données
 jest.mock('../../models/comment');
